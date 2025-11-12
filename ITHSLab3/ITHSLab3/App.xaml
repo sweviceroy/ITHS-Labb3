@@ -7,31 +7,31 @@
              StartupUri="MainWindow.xaml">
 
     <Application.Resources>
-
-        <!-- Merge global QuizForge theme, this has to be first!!! -->
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- 🔹 Include the QuizForge theme -->
                 <ResourceDictionary Source="Themes/Theme.QuizForge.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- ViewModel -> View mappings -->
+            <!-- 🔸 SplashViewModel -> SplashView -->
             <DataTemplate DataType="{x:Type vm:SplashViewModel}">
                 <views:SplashView />
             </DataTemplate>
 
+            <!-- 🔸 MenuViewModel -> MenuView -->
             <DataTemplate DataType="{x:Type vm:MenuViewModel}">
                 <views:MenuView />
             </DataTemplate>
 
-            <!-- (optional later)
+            <!-- 🔸 ConfigurationViewModel -> ConfigurationView -->
             <DataTemplate DataType="{x:Type vm:ConfigurationViewModel}">
                 <views:ConfigurationView />
             </DataTemplate>
 
+            <!-- 🔸 PlayerViewModel -> PlayerView -->
             <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
                 <views:PlayerView />
             </DataTemplate>
-            -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>
