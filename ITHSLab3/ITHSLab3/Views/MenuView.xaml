@@ -1,18 +1,58 @@
-﻿<TextBlock Text="QUIZFORGE"
-           FontFamily="Cinzel, Georgia"
-           FontSize="36"
-           FontWeight="Bold"
-           Foreground="{StaticResource QuizText}"
-           HorizontalAlignment="Center"/>
+﻿<UserControl x:Class="ITHSLab3.Views.MenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1080" d:DesignHeight="680"
+             Background="{DynamicResource QuizBg}">
 
-<TextBlock Text="Main Menu"
-           FontFamily="Cinzel, Georgia"
-           FontSize="18"
-           Foreground="{StaticResource QuizTextSecondary}"
-           HorizontalAlignment="Center"/>
+  <!-- Ensure the designer finds the theme -->
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ITHSLab3;component/Themes/Theme.QuizForge.xaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </UserControl.Resources>
 
-<Button Content="Start Configuration"
-        Width="240" Height="50"
-        FontSize="18"
-        FontWeight="SemiBold"
-        Command="{Binding StartConfigurationCommand}"/>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Margin="0"
+                    >
+      <TextBlock Text="QUIZFORGE"
+                 FontFamily="Cinzel, Georgia"
+                 FontSize="36"
+                 FontWeight="Bold"
+                 Foreground="{DynamicResource QuizText}"
+                 HorizontalAlignment="Center"/>
+
+      <TextBlock Text="Main Menu"
+                 FontFamily="Cinzel, Georgia"
+                 FontSize="18"
+                 Foreground="{DynamicResource QuizTextSecondary}"
+                 HorizontalAlignment="Center"
+                 Margin="0,8,0,16"/>
+
+      <Button Content="Start Configuration"
+              Width="240" Height="50"
+              FontSize="18"
+              FontWeight="SemiBold"
+              Command="{Binding StartConfigurationCommand}"/>
+    </StackPanel>
+
+    <TextBlock Grid.Row="1"
+               Text="© IT-Högskolan — QuizForge"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,10"
+               Foreground="{DynamicResource QuizTextSecondary}"
+               FontFamily="Georgia"/>
+  </Grid>
+</UserControl>
