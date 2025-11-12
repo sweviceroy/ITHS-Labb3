@@ -5,27 +5,33 @@
              xmlns:views="clr-namespace:ITHSLab3.Views"
              xmlns:vm="clr-namespace:ITHSLab3.ViewModels"
              StartupUri="MainWindow.xaml">
+
     <Application.Resources>
 
-        <!-- SplashViewModel -> SplashView -->
-        <DataTemplate DataType="{x:Type vm:SplashViewModel}">
-            <views:SplashView />
-        </DataTemplate>
+        <!-- Merge global QuizForge theme, this has to be first!!! -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Theme.QuizForge.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-        <!-- MenuViewModel -> MenuView -->
-        <DataTemplate DataType="{x:Type vm:MenuViewModel}">
-            <views:MenuView />
-        </DataTemplate>
+            <!-- ViewModel -> View mappings -->
+            <DataTemplate DataType="{x:Type vm:SplashViewModel}">
+                <views:SplashView />
+            </DataTemplate>
 
-        <!-- (optional later)
-        <DataTemplate DataType="{x:Type vm:ConfigurationViewModel}">
-            <views:ConfigurationView />
-        </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:MenuViewModel}">
+                <views:MenuView />
+            </DataTemplate>
 
-        <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
-            <views:PlayerView />
-        </DataTemplate>
-        -->
+            <!-- (optional later)
+            <DataTemplate DataType="{x:Type vm:ConfigurationViewModel}">
+                <views:ConfigurationView />
+            </DataTemplate>
 
+            <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
+                <views:PlayerView />
+            </DataTemplate>
+            -->
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

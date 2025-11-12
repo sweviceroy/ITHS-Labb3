@@ -1,12 +1,186 @@
 ﻿<UserControl x:Class="ITHSLab3.Views.ConfigurationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ITHSLab3.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1080" d:DesignHeight="680">
+
+    <!-- Swenglish comments: enkel, clean layout. 3 kolumner: Packs | Questions | Options. Bottom: Start. -->
+
+    <UserControl.Resources>
+        <!-- List item text wrap (så långa rader bryts) -->
+        <Style x:Key="WrapListViewItem" TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <!-- Template för QuestionPack i vänster listan -->
+        <DataTemplate x:Key="PackTemplate">
+            <Grid Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                <TextBlock Grid.Column="1"
+                           Margin="8,0,0,0"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           Text="{Binding Questions.Count, StringFormat=#Q: {0}}"/>
+            </Grid>
+        </DataTemplate>
+
+        <!-- Template för Option till höger (read-only checkbox + text) -->
+        <DataTemplate x:Key="OptionTemplate">
+            <DockPanel Margin="4,2">
+                <CheckBox IsChecked="{Binding IsCorrect}" IsHitTestVisible="False" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+            </DockPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <!-- Bottom bar -->
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.2*"/>
+                <!-- Packs -->
+                <ColumnDefinition Width="2.8*"/>
+                <!-- Questions -->
+                <ColumnDefinition Width="2.0*"/>
+                <!-- Options -->
+            </Grid.ColumnDefinitions>
+
+            <!-- ========== LEFT: PACKS ========== -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8" >
+                    <TextBlock Text="Packs" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
+                    <Button Content="Add" Margin="0,0,6,0" Padding="10,4"
+                            Command="{Binding AddPackCommand}" />
+                    <Button Content="Remove" Padding="10,4"
+                            Command="{Binding RemovePackCommand}"
+                            CommandParameter="{Binding SelectedPack}" />
+                </StackPanel>
+
+                <!-- List -->
+                <ListView Grid.Row="1"
+                          Margin="8"
+                          ItemContainerStyle="{StaticResource WrapListViewItem}"
+                          ItemsSource="{Binding QuestionPacks}"
+                          SelectedItem="{Binding SelectedPack, Mode=TwoWay}"
+                          IsSynchronizedWithCurrentItem="True">
+                    <ListView.ItemTemplate>
+                        <StaticResource ResourceKey="PackTemplate"/>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!-- ========== MIDDLE: QUESTIONS ========== -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="Questions" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
+                    <Button Content="Add" Margin="0,0,6,0" Padding="10,4"
+                            Command="{Binding AddQuestionCommand}"
+                            CommandParameter="{Binding SelectedPack}" />
+                    <Button Content="Remove" Padding="10,4"
+                            Command="{Binding RemoveQuestionCommand}"
+                            CommandParameter="{Binding SelectedQuestion}" />
+                </StackPanel>
+
+                <!-- Disable/grey out when no SelectedPack -->
+                <Grid Grid.Row="1" Margin="8">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Setter Property="Opacity"   Value="1"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPack}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Opacity"   Value="0.55"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <ListView ItemContainerStyle="{StaticResource WrapListViewItem}"
+                              ItemsSource="{Binding SelectedPack.Questions}"
+                              SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Text" Width="380"
+                                                DisplayMemberBinding="{Binding Text}"/>
+                                <GridViewColumn Header="Options" Width="80"
+                                                DisplayMemberBinding="{Binding Options.Count}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Grid>
+
+            <!-- ========== RIGHT: OPTIONS (read-only list) ========== -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="Options" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
+                    <Button Content="Pack Options…" Padding="10,4"
+                            Command="{Binding OpenPackOptionsCommand}"
+                            CommandParameter="{Binding SelectedPack}" />
+                </StackPanel>
+
+                <!-- Disable/grey out when no SelectedQuestion -->
+                <Grid Grid.Row="1" Margin="8">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Setter Property="Opacity"   Value="1"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedQuestion}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Opacity"   Value="0.55"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <ListView ItemContainerStyle="{StaticResource WrapListViewItem}"
+                              ItemsSource="{Binding SelectedQuestion.Options}">
+                        <ListView.ItemTemplate>
+                            <StaticResource ResourceKey="OptionTemplate"/>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- ========== BOTTOM BAR: START QUIZ ========== -->
+        <DockPanel Grid.Row="1" LastChildFill="False" Margin="8,0,8,8">
+            <Separator DockPanel.Dock="Left" />
+            <Button DockPanel.Dock="Right"
+                    Content="Start"
+                    Width="140" Height="40"
+                    FontWeight="SemiBold"
+                    Command="{Binding StartPlayCommand}" />
+        </DockPanel>
     </Grid>
 </UserControl>
