@@ -1,4 +1,5 @@
-﻿using ITHSLab3.ViewModels;
+﻿using System;
+using ITHSLab3.ViewModels;
 
 namespace ITHSLab3.ViewModels
 {
@@ -6,20 +7,19 @@ namespace ITHSLab3.ViewModels
     public class ShellViewModel : ViewModelBase
     {
         private object _currentView;
-
         public object CurrentView
         {
             get => _currentView;
             set
             {
                 _currentView = value;
-                OnPropertyChanged();        // Här sätter vi Current view
+                OnPropertyChanged(); // Notify the UI
             }
         }
 
         public ShellViewModel()
         {
-            // start with splashScreenen
+            // Start with splash screen
             var splash = new SplashViewModel();
             splash.SplashCompleted += OnSplashCompleted;
 
@@ -28,8 +28,16 @@ namespace ITHSLab3.ViewModels
 
         private void OnSplashCompleted()
         {
-            // when splash says "done", switch to menu
-            CurrentView = new MenuViewModel();
+            // When splash says "done", switch to menu
+            var menu = new MenuViewModel();
+            menu.StartConfigurationRequested += OnStartConfiguration; // 🔹 subscribe to Menu event
+            CurrentView = menu;
+        }
+
+        private void OnStartConfiguration()
+        {
+            // 🔹 Switch from Menu -> Configuration
+            CurrentView = new ConfigurationViewModel();
         }
     }
 }
