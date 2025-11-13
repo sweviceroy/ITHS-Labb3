@@ -17,56 +17,44 @@ namespace ITHSLab3.ViewModels
         public QuestionPack CurrentPack
         {
             get => _currentPack;
-            set { _currentPack = value; OnPropertyChanged(); }
+            private set { _currentPack = value; OnPropertyChanged(); }
         }
 
         private Question _currentQuestion;
         public Question CurrentQuestion
         {
             get => _currentQuestion;
-            set { _currentQuestion = value; OnPropertyChanged(); }
+            private set { _currentQuestion = value; OnPropertyChanged(); }
         }
 
         private int _currentQuestionIndex;
         public int CurrentQuestionIndex
         {
             get => _currentQuestionIndex;
-            set { _currentQuestionIndex = value; OnPropertyChanged(); }
+            private set { _currentQuestionIndex = value; OnPropertyChanged(); }
         }
 
         private int _score;
         public int Score
         {
             get => _score;
-            set { _score = value; OnPropertyChanged(); }
+            private set { _score = value; OnPropertyChanged(); }
         }
 
         private bool _isQuizFinished;
         public bool IsQuizFinished
         {
             get => _isQuizFinished;
-            set { _isQuizFinished = value; OnPropertyChanged(); }
+            private set
+            {
+                _isQuizFinished = value;
+                OnPropertyChanged();
+                // här kan vi senare trigga om NextQuestionCommand kan köra osv
+            }
         }
 
-        /*
-            public List<QuestionOption> Options { get; set; } = new();
-
-            private List<QuestionOption> _options;
-            public List<QuestionOption> Options
-            {
-            get => _options;
-            set { _options = value; OnPropertyChanged(); }
-            }
-
-            Options.Add(newOption);
-            var newList = new List<QuestionOption>(Options);
-            newList.Add(newOption);
-            Options = newList;           
-
-         */
-
         // this updates with just Options.Add(new Option);
-        public ObservableCollection<QuestionOption> Options { get; set; } = new();
+        public ObservableCollection<QuestionOption> Options { get; } = new();
 
         // Fired when the quiz ends → ShellViewModel can swap to results view
         public event Action<int, int> QuizFinished;
@@ -85,19 +73,38 @@ namespace ITHSLab3.ViewModels
         // ■■ CONSTRUCTOR           ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-        public PlayerViewModel(QuestionPack pack)
+        // tom ctor – Shell skapar denna en gång och anropar LoadPack() när vi ska spela
+        public PlayerViewModel()
         {
+            // skapa commands en gång
+            CheckAnswerCommand = new RelayCommand(AnswerQuestion);
+            NextQuestionCommand = new RelayCommand(
+                _ => NextQuestion(),
+                _ => !IsQuizFinished
+            );
+        }
+
+        // Shell kallar denna när användaren klickar "Start" i ConfigurationView
+        public void LoadPack(QuestionPack pack)
+        {
+            if (pack == null || pack.Questions == null || pack.Questions.Count == 0)
+            {
+                // inget att spela – markera som klart direkt
+                CurrentPack = pack;
+                CurrentQuestion = null;
+                CurrentQuestionIndex = 0;
+                Score = 0;
+                IsQuizFinished = true;
+                QuizFinished?.Invoke(0, 0);
+                return;
+            }
+
             CurrentPack = pack;
             CurrentQuestionIndex = 0;
             Score = 0;
             IsQuizFinished = false;
 
-            // set the question
             LoadCurrentQuestion();
-
-            // create commands
-            CheckAnswerCommand = new RelayCommand(AnswerQuestion);
-            NextQuestionCommand = new RelayCommand(_ => NextQuestion(), _ => !IsQuizFinished);
         }
 
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -106,6 +113,12 @@ namespace ITHSLab3.ViewModels
 
         private void LoadCurrentQuestion()
         {
+            if (CurrentPack == null || CurrentPack.Questions == null)
+            {
+                FinishQuiz();
+                return;
+            }
+
             if (CurrentQuestionIndex >= 0 && CurrentQuestionIndex < CurrentPack.Questions.Count)
             {
                 CurrentQuestion = CurrentPack.Questions[CurrentQuestionIndex];
@@ -124,18 +137,28 @@ namespace ITHSLab3.ViewModels
 
         private void AnswerQuestion(object parameter)
         {
+            if (IsQuizFinished)
+                return;
+
             if (parameter is not QuestionOption selectedOption)
                 return;
 
             // check if correct
             if (selectedOption.IsCorrectAnswer)
                 Score++;
-            //increaseScore()
+
+            // increaseScore(); // vi kör direkt i koden istället
             NextQuestion();
         }
 
         private void NextQuestion()
         {
+            if (CurrentPack == null || CurrentPack.Questions == null)
+            {
+                FinishQuiz();
+                return;
+            }
+
             CurrentQuestionIndex++;
 
             if (CurrentQuestionIndex < CurrentPack.Questions.Count)
@@ -147,14 +170,9 @@ namespace ITHSLab3.ViewModels
         private void FinishQuiz()
         {
             IsQuizFinished = true;
-            QuizFinished?.Invoke(Score, CurrentPack.Questions.Count);
-        }
 
-        /*
-        public void increaseScore() {
-        score++;
+            var totalQuestions = CurrentPack?.Questions?.Count ?? 0;
+            QuizFinished?.Invoke(Score, totalQuestions);
         }
-         * 
-         */
     }
 }

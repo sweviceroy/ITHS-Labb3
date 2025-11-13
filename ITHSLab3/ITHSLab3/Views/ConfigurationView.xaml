@@ -29,8 +29,8 @@
 
         <DataTemplate x:Key="OptionTemplate">
             <DockPanel Margin="4,2">
-                <CheckBox IsChecked="{Binding IsCorrect}" IsHitTestVisible="False" Margin="0,0,8,0"/>
-                <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                <CheckBox IsChecked="{Binding IsCorrectAnswer}" IsHitTestVisible="False" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding AnswerText}" TextWrapping="Wrap" />
             </DockPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -116,7 +116,7 @@
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Text" Width="380"
-                                                    DisplayMemberBinding="{Binding Text}"/>
+                                                    DisplayMemberBinding="{Binding QuestionText}"/>
                                     <GridViewColumn Header="Options" Width="80"
                                                     DisplayMemberBinding="{Binding Options.Count}"/>
                                 </GridView>
