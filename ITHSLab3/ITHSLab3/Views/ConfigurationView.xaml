@@ -58,12 +58,22 @@
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
                         <TextBlock Text="Packs" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
+
                         <Button Content="Add" Margin="0,0,6,0" Padding="10,4"
-                                Command="{Binding AddPackCommand}" />
-                        <Button Content="Remove" Padding="10,4"
-                                Command="{Binding RemovePackCommand}"
-                                CommandParameter="{Binding SelectedPack}" />
+            Command="{Binding AddPackCommand}" />
+
+                        <Button Content="Remove" Margin="0,0,6,0" Padding="10,4"
+            Command="{Binding RemovePackCommand}"
+            CommandParameter="{Binding SelectedPack}" />
+
+                        <!-- JSON Save/Load -->
+                        <Button Content="Save…" Margin="12,0,6,0" Padding="10,4"
+            Command="{Binding SaveToFileCommand}" />
+
+                        <Button Content="Load…" Padding="10,4"
+            Command="{Binding LoadFromFileCommand}" />
                     </StackPanel>
+
 
                     <ListView Grid.Row="1"
                               Margin="8"

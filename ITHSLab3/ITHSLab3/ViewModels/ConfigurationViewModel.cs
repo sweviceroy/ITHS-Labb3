@@ -4,6 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.Win32;
+
 
 namespace ITHSLab3.ViewModels
 {
@@ -56,12 +61,18 @@ namespace ITHSLab3.ViewModels
         public ICommand OpenPackOptionsCommand { get; }
         public ICommand StartPlayCommand { get; }
 
+        // JSON save/load commands
+        public ICommand SaveToFileCommand { get; }
+        public ICommand LoadFromFileCommand { get; }
+
+
+
         // _____________________________________________________________________ END COMMANDS
         //  Navigation/dialog hooks (Shell can subscribe)
 
         // Lets start the show *theme from lock stock starts playing
         // https://www.youtube.com/watch?v=suZIGmIhUsw&t=108s
-        
+
         public event Action<QuestionPack> StartPlayRequested;
         
         // open settings for dialog
@@ -84,6 +95,14 @@ namespace ITHSLab3.ViewModels
             RemoveQuestionCommand = new RelayCommand(_ => RemoveSelectedQuestion(), _ => SelectedPack != null && SelectedQuestion != null);
             OpenPackOptionsCommand = new RelayCommand(_ => PackOptionsRequested?.Invoke(SelectedPack), _ => SelectedPack != null); // need nullable? so it wont crash
             StartPlayCommand = new RelayCommand(_ => StartPlayRequested?.Invoke(SelectedPack), _ => SelectedPack != null && SelectedPack.Questions.Any()); // Time to start if we have a selected pack and this is not empty. LINQ to get the avlible question
+
+            // JSON
+            SaveToFileCommand = new RelayCommand(async _ => await SaveToFileAsync(),_ => QuestionPacks.Any());
+
+            LoadFromFileCommand = new RelayCommand(
+                async _ => await LoadFromFileAsync(),
+                _ => true
+            );
 
             //// Load example quiz pack so UI has something to show @ start 
             LoadSampleContent();
@@ -230,5 +249,92 @@ namespace ITHSLab3.ViewModels
             SelectedPack = pack;
             SelectedQuestion = q1;
         }
+        // ■■■ JSON SAVE/LOAD ■■■
+
+        // Sparar alla question packs till en vald fil (json)
+        private async Task SaveToFileAsync()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                FileName = "quizpacks.json"
+            };
+
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return; // användaren avbröt
+
+            // serialisera hela samlingen
+            var packsList = QuestionPacks.ToList();
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            string json = JsonSerializer.Serialize(packsList, options);
+
+            // skriv async
+            await File.WriteAllTextAsync(dialog.FileName, json);
+        }
+
+        // Läser in question packs från fil (json) och ersätter nuvarande lista
+        private async Task LoadFromFileAsync()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+            };
+
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return; // användaren avbröt
+
+            if (!File.Exists(dialog.FileName))
+                return;
+
+            string json = await File.ReadAllTextAsync(dialog.FileName);
+
+            // försök deserialisera
+            var packsFromFile = JsonSerializer.Deserialize<List<QuestionPack>>(json);
+            if (packsFromFile == null)
+                return;
+
+            // ersätt samlingen
+            QuestionPacks.Clear();
+            foreach (var pack in packsFromFile)
+            {
+                QuestionPacks.Add(pack);
+            }
+
+            // sätt selected pack/question till första om finns
+            SelectedPack = QuestionPacks.FirstOrDefault();
+            SelectedQuestion = SelectedPack?.Questions.FirstOrDefault();
+
+            // uppdatera id-räknare så nya frågor/paket får unika ids
+            UpdateIdCounters();
+        }
+
+        // uppdaterar _nextPackId, _nextQuestionId, _nextOptionId baserat på inlästa data
+        private void UpdateIdCounters()
+        {
+            if (QuestionPacks.Any())
+            {
+                _nextPackId = QuestionPacks.Max(p => p.Id) + 1;
+
+                var allQuestions = QuestionPacks.SelectMany(p => p.Questions);
+                _nextQuestionId = allQuestions.Any() ? allQuestions.Max(q => q.Id) + 1 : 1;
+
+                var allOptions = allQuestions.SelectMany(q => q.Options);
+                _nextOptionId = allOptions.Any() ? allOptions.Max(o => o.Id) + 1 : 1;
+            }
+            else
+            {
+                _nextPackId = 1;
+                _nextQuestionId = 1;
+                _nextOptionId = 1;
+            }
+        }
+
     }
 }
