@@ -17,8 +17,19 @@ namespace ITHSLab3.ViewModels
         public QuestionPack CurrentPack
         {
             get => _currentPack;
-            private set { _currentPack = value; OnPropertyChanged(); }
+            private set
+            {
+                _currentPack = value;
+                OnPropertyChanged();                    // CurrentPack changed
+                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-texten också
+            }
         }
+
+        // Bind this property to the PlayerView later, to display question numbers.    [ ]
+        public string ProgressText =>
+            CurrentPack == null || CurrentPack.Questions == null || CurrentPack.Questions.Count == 0
+                ? "NO QUESTIONS"
+                : $"Question {CurrentQuestionIndex + 1} out of {CurrentPack.Questions.Count}";
 
         private Question _currentQuestion;
         public Question CurrentQuestion
@@ -31,7 +42,12 @@ namespace ITHSLab3.ViewModels
         public int CurrentQuestionIndex
         {
             get => _currentQuestionIndex;
-            private set { _currentQuestionIndex = value; OnPropertyChanged(); }
+            private set
+            {
+                _currentQuestionIndex = value;
+                OnPropertyChanged();                    // CurrentQuestionIndex changed
+                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-texten
+            }
         }
 
         private int _score;
@@ -95,6 +111,7 @@ namespace ITHSLab3.ViewModels
                 CurrentQuestionIndex = 0;
                 Score = 0;
                 IsQuizFinished = true;
+                OnPropertyChanged(nameof(ProgressText)); // säkerställ att texten uppdateras
                 QuizFinished?.Invoke(0, 0);
                 return;
             }
@@ -147,7 +164,6 @@ namespace ITHSLab3.ViewModels
             if (selectedOption.IsCorrectAnswer)
                 Score++;
 
-            // increaseScore(); // vi kör direkt i koden istället
             NextQuestion();
         }
 

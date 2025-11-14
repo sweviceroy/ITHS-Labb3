@@ -1,12 +1,93 @@
 ﻿<UserControl x:Class="ITHSLab3.Views.PlayerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:ITHSLab3.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             mc:Ignorable="d"
+             d:DesignHeight="680"
+             d:DesignWidth="1080">
+
+    <!-- Outer border: bakgrund + padding runt hela playern -->
+    <Border Background="{StaticResource QuizBg}" Padding="20">
+
+        <!-- Root layout grid -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- header -->
+                <RowDefinition Height="Auto"/>
+                <!-- question text -->
+                <RowDefinition Height="*"/>
+                <!-- options -->
+            </Grid.RowDefinitions>
+
+            <!-- ■■■ HEADER – pack-namn + enkel progress ■■■ -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <!-- pack name -->
+                <TextBlock Text="{Binding CurrentPack.Name}"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+
+                <!-- enkel progress-text, vi snyggar till detta senare i ViewModel -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="16"
+                               Foreground="White"
+                               Text="{Binding ProgressText}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ■■■ QUESTION TEXT – stor och tydlig ■■■ -->
+            <Border Grid.Row="1"
+                    Margin="0,0,0,20"
+                    Background="{StaticResource QuizPanelBg}"
+                    Padding="16"
+                    CornerRadius="8">
+                <TextBlock Text="{Binding CurrentQuestion.QuestionText}"
+                           FontSize="22"
+                           Foreground="White"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- ■■■ OPTIONS – knappar som kör CheckAnswerCommand ■■■ -->
+            <StackPanel Grid.Row="2">
+                <ItemsControl ItemsSource="{Binding Options}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- hela raden är en knapp → klick = välj detta alternativ -->
+                            <Button Padding="12"
+                                    Margin="0,0,0,10"
+                                    FontSize="18"
+                                    Content="{Binding AnswerText}"
+                                    Command="{Binding DataContext.CheckAnswerCommand,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="{StaticResource QuizPanelBg}"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                        <Setter Property="BorderBrush" Value="#555"/>
+
+                                        <!-- lite hover/pressed styling för game-feel -->
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#334"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#446"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+        </Grid>
+    </Border>
 </UserControl>
