@@ -1,12 +1,17 @@
-﻿using System;
-using ITHSLab3.Models;        // behövs för QuestionPack
+﻿using ITHSLab3.Models;        // behövs för QuestionPack
+using ITHSLab3.Services;
 using ITHSLab3.ViewModels;
+using System;
+
 
 namespace ITHSLab3.ViewModels
 {
     // make it public so MainWindow can create it
     public class ShellViewModel : ViewModelBase
     {
+        private readonly AudioService _audioService = new AudioService();
+
+
         private object _currentView;
         public object CurrentView
         {
@@ -40,9 +45,13 @@ namespace ITHSLab3.ViewModels
 
         private void OnSplashCompleted()
         {
+            // starta musikloop efter splash
+            _audioService.PlayLoop("Assets/SoundMusic.wav");
+
             // när splash säger "klar" -> byt till meny
             CurrentView = _menuViewModel;
         }
+
 
         private void OnStartConfiguration()
         {
@@ -71,7 +80,7 @@ namespace ITHSLab3.ViewModels
             }
 
             // låt PlayerViewModel ladda in valt pack
-            _playerViewModel.LoadPack(pack); // du lägger till denna metod i PlayerViewModel
+            _playerViewModel.LoadPack(pack); // 
 
             // byt vy till Player
             CurrentView = _playerViewModel;

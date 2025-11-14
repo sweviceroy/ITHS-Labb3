@@ -4,9 +4,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:ITHSLab3.Views"
+             xmlns:conv="clr-namespace:ITHSLab3.Converters"
              mc:Ignorable="d"
              d:DesignHeight="680"
              d:DesignWidth="1080">
+
+    <!-- converters och liknande -->
+    <UserControl.Resources>
+        <!-- bool -> Visible/Collapsed -->
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
 
     <!-- Outer border: bakgrund + padding runt hela playern -->
     <Border Background="{StaticResource QuizBg}" Padding="20">
@@ -26,17 +33,34 @@
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
                 <!-- pack name -->
                 <TextBlock Text="{Binding CurrentPack.Name}"
+                           d:Text=" TEXTBLOCK1"
                            FontSize="26"
                            FontWeight="Bold"
                            Foreground="White"/>
 
-                <!-- enkel progress-text, vi snyggar till detta senare i ViewModel -->
+                <!-- progress-text från ProgressText-property -->
                 <StackPanel Orientation="Horizontal">
                     <TextBlock FontSize="16"
+                               d:Text=" TEXTBLOCK2"
                                Foreground="White"
                                Text="{Binding ProgressText}"/>
                 </StackPanel>
             </StackPanel>
+
+            <!-- 🔔 FEEDBACK ICON (Correct/Error) – ligger ovanför headern uppe till höger -->
+            <!-- NU Har vi lärt oss massa nytt! d:Text="SAMPLE" för att visa enbart i VS  -->
+            <!-- En custom converter för att byta bool till vadsomhelst (i detta fallet visibility -->
+ 
+            <Image Grid.Row="0"
+                   Width="80"
+                   Height="80"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   Margin="0,0,10,0"
+                   d:Source="/Assets/ImageCORRECT.png"
+                   d:Visibility="Visible"
+                   Source="{Binding FeedbackImageSource}"
+                   Visibility="{Binding FeedbackVisible, Converter={StaticResource BoolToVis}}"/>
 
             <!-- ■■■ QUESTION TEXT – stor och tydlig ■■■ -->
             <Border Grid.Row="1"
@@ -45,6 +69,7 @@
                     Padding="16"
                     CornerRadius="8">
                 <TextBlock Text="{Binding CurrentQuestion.QuestionText}"
+                           d:Text=" TEXTBLOCK3"
                            FontSize="22"
                            Foreground="White"
                            TextWrapping="Wrap"/>

@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\ImageCORRECT.png" />
+    <None Remove="Assets\ImageERROR.png" />
     <None Remove="Assets\QuizForgeSplashScreen.png" />
     <None Remove="Assets\SoundMusic.wav" />
     <None Remove="Assets\SoundSplashScreen.wav" />
@@ -16,13 +18,18 @@
 
   <ItemGroup>
     <Folder Include="Themes\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\QuizForgeSplashScreen.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Assets\ImageCORRECT.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\ImageERROR.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\SoundMusic.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Collections.Generic;   // behövs för List<T>
 using System.Windows.Input;
 using ITHSLab3.Models;
+using System.Threading.Tasks;
+
 
 namespace ITHSLab3.ViewModels
 {
@@ -13,6 +15,21 @@ namespace ITHSLab3.ViewModels
         // ■■ PROPERTIES AND FIELDS  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
+        private string _feedbackImageSource;
+        public string FeedbackImageSource
+        {
+            get => _feedbackImageSource;
+            private set { _feedbackImageSource = value; OnPropertyChanged(); }
+        }
+
+        private bool _feedbackVisible;
+        public bool FeedbackVisible
+        {
+            get => _feedbackVisible;
+            private set { _feedbackVisible = value; OnPropertyChanged(); }
+        }
+
+
         private QuestionPack _currentPack;
         public QuestionPack CurrentPack
         {
@@ -20,16 +37,39 @@ namespace ITHSLab3.ViewModels
             private set
             {
                 _currentPack = value;
-                OnPropertyChanged();                    // CurrentPack changed
-                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-texten också
+                OnPropertyChanged();                     // CurrentPack
+                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-text
             }
         }
 
-        // Bind this property to the PlayerView later, to display question numbers.    [ ]
-        public string ProgressText =>
-            CurrentPack == null || CurrentPack.Questions == null || CurrentPack.Questions.Count == 0
-                ? "NO QUESTIONS"
-                : $"Question {CurrentQuestionIndex + 1} out of {CurrentPack.Questions.Count}";
+        // lista med frågor bara för denna spelomgång (shufflad)
+        private List<Question> _sessionQuestions;
+
+        // enkel Random för shuffling
+        private readonly Random _random = new Random();
+
+        // beräknad text för "Question X out of Y"
+        public string ProgressText
+        {
+            get
+            {
+                int totalQuestions = 0;
+
+                if (_sessionQuestions != null)
+                    totalQuestions = _sessionQuestions.Count;
+                else if (CurrentPack != null && CurrentPack.Questions != null)
+                    totalQuestions = CurrentPack.Questions.Count;
+
+                if (totalQuestions == 0)
+                    return "NO QUESTIONS";
+
+                // om vi har gått förbi sista frågan → visa sluttext
+                if (CurrentQuestionIndex >= totalQuestions)
+                    return $"Quiz Finished! Score: {Score}/{totalQuestions}";
+
+                return $"Question {CurrentQuestionIndex + 1} out of {totalQuestions}";
+            }
+        }
 
         private Question _currentQuestion;
         public Question CurrentQuestion
@@ -45,8 +85,8 @@ namespace ITHSLab3.ViewModels
             private set
             {
                 _currentQuestionIndex = value;
-                OnPropertyChanged();                    // CurrentQuestionIndex changed
-                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-texten
+                OnPropertyChanged();                     // CurrentQuestionIndex
+                OnPropertyChanged(nameof(ProgressText)); // uppdatera header-text
             }
         }
 
@@ -54,7 +94,12 @@ namespace ITHSLab3.ViewModels
         public int Score
         {
             get => _score;
-            private set { _score = value; OnPropertyChanged(); }
+            private set
+            {
+                _score = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ProgressText)); // score påverkar sluttexten
+            }
         }
 
         private bool _isQuizFinished;
@@ -107,20 +152,25 @@ namespace ITHSLab3.ViewModels
             {
                 // inget att spela – markera som klart direkt
                 CurrentPack = pack;
+                _sessionQuestions = null;
                 CurrentQuestion = null;
                 CurrentQuestionIndex = 0;
                 Score = 0;
                 IsQuizFinished = true;
-                OnPropertyChanged(nameof(ProgressText)); // säkerställ att texten uppdateras
+                OnPropertyChanged(nameof(ProgressText));
                 QuizFinished?.Invoke(0, 0);
                 return;
             }
 
             CurrentPack = pack;
-            CurrentQuestionIndex = 0;
             Score = 0;
             IsQuizFinished = false;
 
+            // skapa en sessionslista med frågor och shuffle den
+            _sessionQuestions = new List<Question>(pack.Questions);
+            ShuffleQuestions();
+
+            CurrentQuestionIndex = 0;
             LoadCurrentQuestion();
         }
 
@@ -128,48 +178,107 @@ namespace ITHSLab3.ViewModels
         // ■■ METHODS               ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
+        // enkel Fisher–Yates shuffle – inga LINQ eller konstigheter
+        private void ShuffleQuestions()
+        {
+            if (_sessionQuestions == null)
+                return;
+
+            for (int i = _sessionQuestions.Count - 1; i > 0; i--)
+            {
+                int j = _random.Next(i + 1); // random index 0..i
+                Question temp = _sessionQuestions[i];
+                _sessionQuestions[i] = _sessionQuestions[j];
+                _sessionQuestions[j] = temp;
+            }
+        }
+
         private void LoadCurrentQuestion()
         {
-            if (CurrentPack == null || CurrentPack.Questions == null)
+            // kolla först att vi har något att spela
+            if (_sessionQuestions == null || _sessionQuestions.Count == 0)
             {
                 FinishQuiz();
                 return;
             }
 
-            if (CurrentQuestionIndex >= 0 && CurrentQuestionIndex < CurrentPack.Questions.Count)
+            // kolla att indexet är inom listans gränser
+            if (CurrentQuestionIndex >= 0 && CurrentQuestionIndex < _sessionQuestions.Count)
             {
-                CurrentQuestion = CurrentPack.Questions[CurrentQuestionIndex];
+                // plocka ut den aktuella frågan från vår shufflade lista
+                CurrentQuestion = _sessionQuestions[CurrentQuestionIndex];
 
-                // clear and repopulate Options for binding (needed for ObservableCollection updates)
+                // om frågan saknar alternativ: töm listan och baila
+                if (CurrentQuestion.Options == null || CurrentQuestion.Options.Count == 0)
+                {
+                    Options.Clear();
+                    return;
+                }
+
+                // skapa en KOPIA av alternativen – vi vill INTE röra originalet i modellen
+                List<QuestionOption> shuffledOptions = new List<QuestionOption>(CurrentQuestion.Options);
+
+                // enkel Fisher–Yates shuffle
+                for (int i = shuffledOptions.Count - 1; i > 0; i--)
+                {
+                    int j = _random.Next(i + 1);
+                    QuestionOption temp = shuffledOptions[i];
+                    shuffledOptions[i] = shuffledOptions[j];
+                    shuffledOptions[j] = temp;
+                }
+
+                // fyll ObservableCollection för UI
                 Options.Clear();
-                foreach (var opt in CurrentQuestion.Options)
+                foreach (QuestionOption opt in shuffledOptions)
+                {
                     Options.Add(opt);
+                }
             }
             else
             {
-                // if no more questions → finish quiz
+                // om indexet är utanför → avsluta quizet
                 FinishQuiz();
             }
         }
 
-        private void AnswerQuestion(object parameter)
+
+        private async void AnswerQuestion(object parameter)
         {
             if (IsQuizFinished)
                 return;
 
-            if (parameter is not QuestionOption selectedOption)
+            QuestionOption selectedOption = parameter as QuestionOption;
+            if (selectedOption == null)
                 return;
 
-            // check if correct
-            if (selectedOption.IsCorrectAnswer)
+            // check correctness
+            bool correct = selectedOption.IsCorrectAnswer;
+            if (correct)
                 Score++;
 
+            // set image
+            if (correct)
+                FeedbackImageSource = "/Assets/ImageCORRECT.png";
+            else
+                FeedbackImageSource = "/Assets/ImageERROR.png";
+
+            // show it
+            FeedbackVisible = true;
+
+            // wait 3 seconds
+            await Task.Delay(3000);
+
+            // hide again
+            FeedbackVisible = false;
+
+            // go next
             NextQuestion();
         }
 
+
         private void NextQuestion()
         {
-            if (CurrentPack == null || CurrentPack.Questions == null)
+            if (_sessionQuestions == null || _sessionQuestions.Count == 0)
             {
                 FinishQuiz();
                 return;
@@ -177,7 +286,7 @@ namespace ITHSLab3.ViewModels
 
             CurrentQuestionIndex++;
 
-            if (CurrentQuestionIndex < CurrentPack.Questions.Count)
+            if (CurrentQuestionIndex < _sessionQuestions.Count)
                 LoadCurrentQuestion();
             else
                 FinishQuiz();
@@ -187,8 +296,14 @@ namespace ITHSLab3.ViewModels
         {
             IsQuizFinished = true;
 
-            var totalQuestions = CurrentPack?.Questions?.Count ?? 0;
+            int totalQuestions = 0;
+            if (_sessionQuestions != null)
+                totalQuestions = _sessionQuestions.Count;
+            else if (CurrentPack != null && CurrentPack.Questions != null)
+                totalQuestions = CurrentPack.Questions.Count;
+
             QuizFinished?.Invoke(Score, totalQuestions);
+            OnPropertyChanged(nameof(ProgressText)); // visa sluttext i headern
         }
     }
 }
