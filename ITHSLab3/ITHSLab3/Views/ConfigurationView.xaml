@@ -19,20 +19,40 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+
+                <!-- Editable pack name -->
+                <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 FontWeight="SemiBold"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VerticalContentAlignment="Center"
+                 TextWrapping="NoWrap" />
+
+                <!-- Question count -->
                 <TextBlock Grid.Column="1"
-                           Margin="8,0,0,0"
-                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                           Text="{Binding Questions.Count, StringFormat=#Q: {0}}"/>
+                   Margin="8,0,0,0"
+                   Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                   Text="{Binding Questions.Count, StringFormat=#Q: {0}}"/>
             </Grid>
         </DataTemplate>
 
+
         <DataTemplate x:Key="OptionTemplate">
             <DockPanel Margin="4,2">
-                <CheckBox IsChecked="{Binding IsCorrectAnswer}" IsHitTestVisible="False" Margin="0,0,8,0"/>
-                <TextBlock Text="{Binding AnswerText}" TextWrapping="Wrap" />
+                <!-- Clickable checkbox to mark correct answer -->
+                <CheckBox IsChecked="{Binding IsCorrectAnswer, Mode=TwoWay}"
+                  Margin="0,0,8,0"
+                  VerticalAlignment="Center" />
+
+                <!-- Editable option text -->
+                <TextBox Text="{Binding AnswerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 TextWrapping="Wrap"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VerticalContentAlignment="Center" />
             </DockPanel>
         </DataTemplate>
+
     </UserControl.Resources>
 
     <Grid>
@@ -122,11 +142,21 @@
 
                         <ListView ItemContainerStyle="{StaticResource WrapListViewItem}"
                                   ItemsSource="{Binding SelectedPack.Questions}"
-                                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
+                                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}" Margin="0,0,0,-2">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Text" Width="380"
-                                                    DisplayMemberBinding="{Binding QuestionText}"/>
+                                    <GridViewColumn Header="Text" Width="380">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding QuestionText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  BorderThickness="0"
+                                                  Background="Transparent"
+                                                  TextWrapping="Wrap" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                        
+                                    </GridViewColumn>
+
                                     <GridViewColumn Header="Options" Width="80"
                                                     DisplayMemberBinding="{Binding Options.Count}"/>
                                 </GridView>
