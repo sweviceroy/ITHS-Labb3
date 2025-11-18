@@ -2,6 +2,8 @@
 using ITHSLab3.Services;
 using ITHSLab3.ViewModels;
 using System;
+using ITHSLab3.Views;
+using System.Windows;           // Added
 
 
 namespace ITHSLab3.ViewModels
@@ -43,6 +45,23 @@ namespace ITHSLab3.ViewModels
             CurrentView = _splashViewModel;
         }
 
+        // Handler för PackOptions
+        private void OnPackOptionsRequested(QuestionPack pack)
+        {
+            if (pack == null)
+                return;
+
+            // ADDA using System.Windows; För att kunna öppna nya minifönster
+            var dialog = new PackOptionsDialog(pack)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            // We don't need the result right now; the pack is edited via bindings
+            dialog.ShowDialog();
+        }
+
+
         private void OnSplashCompleted()
         {
             // starta musikloop efter splash
@@ -55,14 +74,17 @@ namespace ITHSLab3.ViewModels
 
         private void OnStartConfiguration()
         {
-            // när menyn säger "öppna config"
+
+            // när menyn säger "öppna config", vi skapar bara en gång. 
             if (_configurationViewModel == null)
             {
                 _configurationViewModel = new ConfigurationViewModel();
 
                 // lyssna på när config vill starta spelet
                 _configurationViewModel.StartPlayRequested += OnStartPlayRequested;
-                // (senare kan vi även hooka PackOptionsRequested här)
+
+                // Hookat OnPackOptionsRequested
+                _configurationViewModel.PackOptionsRequested += OnPackOptionsRequested;
             }
 
             CurrentView = _configurationViewModel;

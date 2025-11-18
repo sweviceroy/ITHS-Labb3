@@ -13,8 +13,13 @@ namespace ITHSLab3.Models
 
         // optional: seconds per question, can be 0 = no limit
 
+        // seconds per question. sätt 0 för oändligt
         public int TimePerQuestion { get; set; }
 
+        // Difficulty of the pack (Easy/Medium/Hard) defaulta till medium. 
+        public Difficulty Difficulty { get; set; } = Difficulty.Medium;
+
+        
         public List<Question> Questions { get; set; }
 
         public QuestionPack()

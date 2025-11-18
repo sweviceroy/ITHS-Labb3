@@ -3,10 +3,93 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ITHSLab3.Views"
+        xmlns:models="clr-namespace:ITHSLab3.Models"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="PackOptionsDialog" Height="450" Width="800">
-    <Grid>
-        
+        Title="Pack Options"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Padding="16">
+
+    <Window.Resources>
+        <!-- All enum values for Difficulty -->
+        <ObjectDataProvider x:Key="DifficultyValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:Difficulty" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="220"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Pack name (you can keep this even if it's also editable in the main view) -->
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="Pack Name"
+                   Margin="0,0,8,8"
+                   VerticalAlignment="Center"
+                   FontWeight="Bold" />
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="0,0,0,8" />
+
+        <!-- Difficulty -->
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Difficulty"
+                   Margin="0,0,8,8"
+                   VerticalAlignment="Center"
+                   FontWeight="Bold" />
+        <ComboBox Grid.Row="1" Grid.Column="1"
+                  Margin="0,0,0,8"
+                  ItemsSource="{Binding Source={StaticResource DifficultyValues}}"
+                  SelectedItem="{Binding Difficulty, Mode=TwoWay}" />
+
+        <!-- Time limit slider -->
+        <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="Time Limit"
+                   Margin="0,0,8,8"
+                   VerticalAlignment="Center"
+                   FontWeight="Bold" />
+
+        <StackPanel Grid.Row="2" Grid.Column="1"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,8">
+            <Slider Width="150"
+                    Minimum="0"
+                    Maximum="60"
+                    TickFrequency="5"
+                    IsSnapToTickEnabled="True"
+                    Value="{Binding TimePerQuestion, Mode=TwoWay}" />
+            <TextBlock Margin="8,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="{Binding TimePerQuestion, StringFormat='{}{0} seconds'}" />
+        </StackPanel>
+
+        <!-- OK / Cancel -->
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,8,0,0">
+            <Button Content="OK"
+                    Width="75"
+                    Margin="0,0,8,0"
+                    IsDefault="True"
+                    Click="OkButton_Click" />
+            <Button Content="Cancel"
+                    Width="75"
+                    IsCancel="True" />
+        </StackPanel>
     </Grid>
 </Window>

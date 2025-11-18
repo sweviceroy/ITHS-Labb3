@@ -8,6 +8,30 @@
              mc:Ignorable="d"
              d:DesignWidth="1080" d:DesignHeight="680">
 
+        <!-- Keyboard bindings -->
+        <UserControl.InputBindings>
+        
+        <KeyBinding Key="N"
+                Modifiers="Control"
+                Command="{Binding AddPackCommand}" />
+
+        <!-- Add Question -->
+        <KeyBinding Key="Q"
+                Modifiers="Control"
+                Command="{Binding AddQuestionCommand}" />
+
+        <!-- Remove Question -->
+        <KeyBinding Key="Delete"
+                Modifiers="Control"
+                Command="{Binding RemoveQuestionCommand}" />
+
+        <!-- Open Pack Options -->
+        <KeyBinding Key="P"
+                Modifiers="Control"
+                Command="{Binding OpenPackOptionsCommand}" />
+    </UserControl.InputBindings>
+
+
     <UserControl.Resources>
         <Style x:Key="WrapListViewItem" TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -145,7 +169,7 @@
                                   SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}" Margin="0,0,0,-2">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Text" Width="380">
+                                    <GridViewColumn Header="Question text" Width="380">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBox Text="{Binding QuestionText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

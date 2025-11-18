@@ -4,6 +4,8 @@ using System.Collections.Generic;   // behövs för List<T>
 using System.Windows.Input;
 using ITHSLab3.Models;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Windows.Threading;
 
 
 namespace ITHSLab3.ViewModels
@@ -12,7 +14,7 @@ namespace ITHSLab3.ViewModels
     public class PlayerViewModel : ViewModelBase
     {
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-        // ■■ PROPERTIES AND FIELDS  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■ PROPERTIES AND FIELDS  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
         private string _feedbackImageSource;
@@ -27,6 +29,20 @@ namespace ITHSLab3.ViewModels
         {
             get => _feedbackVisible;
             private set { _feedbackVisible = value; OnPropertyChanged(); }
+        }
+
+        // TIMER --------------------------------------------------------------------------------
+        private DispatcherTimer _timer;
+
+        private int _timeRemaining;
+        public int TimeRemaining
+        {
+            get => _timeRemaining;
+            private set
+            {
+                _timeRemaining = value;
+                OnPropertyChanged();
+            }
         }
 
 
@@ -63,7 +79,7 @@ namespace ITHSLab3.ViewModels
                 if (totalQuestions == 0)
                     return "NO QUESTIONS";
 
-                // om vi har gått förbi sista frågan → visa sluttext
+                // Sista frågan?  visa sluttext
                 if (CurrentQuestionIndex >= totalQuestions)
                     return $"Quiz Finished! Score: {Score}/{totalQuestions}";
 
@@ -143,6 +159,12 @@ namespace ITHSLab3.ViewModels
                 _ => NextQuestion(),
                 _ => !IsQuizFinished
             );
+            // Timer added for each questoin
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += OnTimerTick;
         }
 
         // Shell kallar denna när användaren klickar "Start" i ConfigurationView
@@ -178,7 +200,7 @@ namespace ITHSLab3.ViewModels
         // ■■ METHODS               ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-        // enkel Fisher–Yates shuffle – inga LINQ eller konstigheter
+        // Fisher–Yates shuffle – kan göras med LINQ också
         private void ShuffleQuestions()
         {
             if (_sessionQuestions == null)
@@ -202,20 +224,18 @@ namespace ITHSLab3.ViewModels
                 return;
             }
 
-            // kolla att indexet är inom listans gränser
+            // kolla att index ligger i sessionQuestions (temp) count.
             if (CurrentQuestionIndex >= 0 && CurrentQuestionIndex < _sessionQuestions.Count)
             {
-                // plocka ut den aktuella frågan från vår shufflade lista
                 CurrentQuestion = _sessionQuestions[CurrentQuestionIndex];
 
-                // om frågan saknar alternativ: töm listan och baila
                 if (CurrentQuestion.Options == null || CurrentQuestion.Options.Count == 0)
                 {
                     Options.Clear();
                     return;
                 }
 
-                // skapa en KOPIA av alternativen – vi vill INTE röra originalet i modellen
+                // Temp list för shuffling
                 List<QuestionOption> shuffledOptions = new List<QuestionOption>(CurrentQuestion.Options);
 
                 // enkel Fisher–Yates shuffle
@@ -233,19 +253,39 @@ namespace ITHSLab3.ViewModels
                 {
                     Options.Add(opt);
                 }
+
+                // ----- TIMER: starta nedräkning (ITS THE FINAL COUNTDOWN! DEO DEO DEEEO DEEEEEO!  -----
+                int time = 0;
+                if (CurrentPack != null)
+                    time = CurrentPack.TimePerQuestion;   // värdet från PackOptionsDialog (ändra i packoptions)
+
+                if (time <= 0)
+                {
+                    TimeRemaining = 0;
+                    _timer.Stop();
+                }
+                else
+                {
+                    TimeRemaining = time;
+                    _timer.Stop();
+                    _timer.Start();
+                }
+
             }
             else
             {
-                // om indexet är utanför → avsluta quizet
                 FinishQuiz();
             }
         }
+
 
 
         private async void AnswerQuestion(object parameter)
         {
             if (IsQuizFinished)
                 return;
+
+            _timer.Stop();   // stop timer for question if answered
 
             QuestionOption selectedOption = parameter as QuestionOption;
             if (selectedOption == null)
@@ -305,5 +345,41 @@ namespace ITHSLab3.ViewModels
             QuizFinished?.Invoke(Score, totalQuestions);
             OnPropertyChanged(nameof(ProgressText)); // visa sluttext i headern
         }
+
+        private void OnTimerTick(object? sender, EventArgs e)
+        {
+            if (IsQuizFinished)
+            {
+                _timer.Stop();
+                return;
+            }
+
+            if (TimeRemaining > 0)
+            {
+                TimeRemaining--;
+            }
+            else
+            {
+                _timer.Stop();
+                HandleTimeUp();
+            }
+        }
+
+        private async void HandleTimeUp()
+        {
+            if (IsQuizFinished)
+                return;
+
+            // visa "fel" när tiden tar slut
+            FeedbackImageSource = "/Assets/ImageERROR.png";
+            FeedbackVisible = true;
+
+            await Task.Delay(2000);
+
+            FeedbackVisible = false;
+            NextQuestion();
+        }
+
+
     }
 }

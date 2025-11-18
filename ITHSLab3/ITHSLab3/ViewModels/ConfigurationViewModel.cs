@@ -42,11 +42,6 @@ namespace ITHSLab3.ViewModels
         }
 
 
-        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-        // ■■ METHODS and other MEMBERS ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
-
         // Commands 
         // TODO: Add commands for : 
         // Adding packs                                             [v]
@@ -70,7 +65,7 @@ namespace ITHSLab3.ViewModels
         // _____________________________________________________________________ END COMMANDS
         //  Navigation/dialog hooks (Shell can subscribe)
 
-        // Lets start the show *theme from lock stock starts playing
+        // We are on! *theme from lock stock starts playing
         // https://www.youtube.com/watch?v=suZIGmIhUsw&t=108s
 
         public event Action<QuestionPack> StartPlayRequested;
@@ -83,6 +78,10 @@ namespace ITHSLab3.ViewModels
         private int _nextPackId = 1;
         
         private int _nextOptionId = 1;
+
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■ CONSTRUCTOR               ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
         public ConfigurationViewModel()
         {
@@ -107,6 +106,10 @@ namespace ITHSLab3.ViewModels
             //// Load example quiz pack so UI has something to show @ start 
             LoadSampleContent();
         }
+
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■ METHODS and other MEMBERS ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
         // --- Actions ---
 

@@ -40,14 +40,20 @@
 
                 <!-- progress-text från ProgressText-property -->
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontSize="16"
+                    <TextBlock FontSize="18"
                                d:Text=" TEXTBLOCK2"
-                               Foreground="White"
-                               Text="{Binding ProgressText}"/>
+                                 Foreground="White"
+                                Text="{Binding ProgressText}" Height="36" Width="134"/>
+
+                    <TextBlock FontSize="20"
+                            Margin="20,0,0,0"
+                            Foreground="White"
+                            Text="{Binding TimeRemaining, StringFormat=Time left: {0}s}"/>
                 </StackPanel>
+
             </StackPanel>
 
-            <!-- 🔔 FEEDBACK ICON (Correct/Error) – ligger ovanför headern uppe till höger -->
+            <!-- 🔔 FEEDBACK ICON (Correct/Error (thanks sora =_= ) – ligger ovanför headern uppe till höger -->
             <!-- NU Har vi lärt oss massa nytt! d:Text="SAMPLE" för att visa enbart i VS  -->
             <!-- En custom converter för att byta bool till vadsomhelst (i detta fallet visibility -->
  
