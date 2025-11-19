@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
 namespace ITHSLab3.Models
 {
     public class QuestionPack
     {
         public int Id { get; set; }                 // unique id for the pack
-        public string Name { get; set; }            // e.g. "C# Basics"
-        public string Description { get; set; }     // short text shown in config view
-
-        // optional: use this if you created Difficulty.cs
-        // public Difficulty Difficulty { get; set; }
-
-        // optional: seconds per question, can be 0 = no limit
+        public string Name { get; set; } = string.Empty;   // e.g. "C# Basics"
+        public string Description { get; set; } = string.Empty; // short text shown in config view
 
         // seconds per question. sätt 0 för oändligt
         public int TimePerQuestion { get; set; }
@@ -19,12 +14,12 @@ namespace ITHSLab3.Models
         // Difficulty of the pack (Easy/Medium/Hard) defaulta till medium. 
         public Difficulty Difficulty { get; set; } = Difficulty.Medium;
 
-        
-        public List<Question> Questions { get; set; }
+        // Use ObservableCollection so WPF updates UI on Add/Remove
+        public ObservableCollection<Question> Questions { get; set; }
 
         public QuestionPack()
         {
-            Questions = new List<Question>();
+            Questions = new ObservableCollection<Question>();
         }
 
         public QuestionPack(int id, string name, string description)
@@ -32,7 +27,7 @@ namespace ITHSLab3.Models
             Id = id;
             Name = name;
             Description = description;
-            Questions = new List<Question>();
+            Questions = new ObservableCollection<Question>();
         }
 
         public void AddQuestion(Question question)
