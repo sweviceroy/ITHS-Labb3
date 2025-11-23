@@ -17,6 +17,7 @@
     <None Remove="Assets\SoundMusic.wav" />
     <None Remove="Assets\SoundSplashScreen.wav" />
     <None Remove="Assets\SoundStartConfig.wav" />
+    <None Remove="Assets\SoundVictory.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +47,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\SoundStartConfig.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\SoundVictory.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

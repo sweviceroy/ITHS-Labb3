@@ -303,7 +303,7 @@ namespace ITHSLab3.ViewModels
             if (packsFromFile == null)
                 return;
 
-            // ersätt samlingen
+            // ersätt ALLES
             QuestionPacks.Clear();
             foreach (var pack in packsFromFile)
             {

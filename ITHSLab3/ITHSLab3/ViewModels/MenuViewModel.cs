@@ -23,7 +23,7 @@ namespace ITHSLab3.ViewModels
         private void StartConfiguration(object? _)
         {
             AudioService _audioService = new AudioService();
-            _audioService.PlayOneShot("Assets/SoundStartConfig.wav", 2.0);
+            _audioService.PlayOneShot("Assets/SoundStartConfig.wav", 5.0); // Går ej! Clampat till 1.0 :/ FML
             Thread.Sleep(3000);
             StartConfigurationRequested?.Invoke();
         }

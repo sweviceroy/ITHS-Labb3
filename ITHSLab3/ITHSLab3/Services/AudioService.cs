@@ -8,6 +8,13 @@ namespace ITHSLab3.Services
         // Music player for background music (looping)
         private readonly MediaPlayer _musicPlayer = new MediaPlayer();
 
+        public double MusicVolume
+        {
+            get => _musicPlayer.Volume;
+            set => _musicPlayer.Volume = value;
+        }
+
+
         public void PlayLoop(string filePath)
         {
             try
@@ -18,7 +25,9 @@ namespace ITHSLab3.Services
 
                 _musicPlayer.Open(new Uri(filePath, UriKind.RelativeOrAbsolute));
                 _musicPlayer.MediaEnded += MusicPlayerOnMediaEnded;
+                _musicPlayer.Volume = 0.2;                                             // SET VOLUME
                 _musicPlayer.Play();
+
             }
             catch (Exception ex)
             {
@@ -28,7 +37,7 @@ namespace ITHSLab3.Services
 
         private void MusicPlayerOnMediaEnded(object? sender, EventArgs e)
         {
-            // loopa genom att starta om från början när låten är slut
+            // För att loopa genom att starta om från början när låten är slut, sätt TimeSpan till Zero
             _musicPlayer.Position = TimeSpan.Zero;
             _musicPlayer.Play();
         }

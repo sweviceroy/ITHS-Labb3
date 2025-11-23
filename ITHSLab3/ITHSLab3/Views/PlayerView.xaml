@@ -54,7 +54,7 @@
             </StackPanel>
 
             <!-- 🔔 FEEDBACK ICON (Correct/Error (thanks sora =_= ) – ligger ovanför headern uppe till höger -->
-            <!-- NU Har vi lärt oss massa nytt! d:Text="SAMPLE" för att visa enbart i VS  -->
+            <!-- NU Har vi lärt oss massa nytt! d:Text="SAMPLE" för vi kör ignore ( mc:Ignorable="d") på denna för att visa enbart i VS  -->
             <!-- En custom converter för att byta bool till vadsomhelst (i detta fallet visibility -->
  
             <Image Grid.Row="0"
