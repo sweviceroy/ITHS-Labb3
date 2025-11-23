@@ -35,7 +35,7 @@
             <ColumnDefinition Width="220"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Pack name (you can keep this even if it's also editable in the main view) -->
+        <!-- Pack name -->
         <TextBlock Grid.Row="0" Grid.Column="0"
                    Text="Pack Name"
                    Margin="0,0,8,8"
@@ -56,9 +56,10 @@
                   ItemsSource="{Binding Source={StaticResource DifficultyValues}}"
                   SelectedItem="{Binding Difficulty, Mode=TwoWay}" />
 
-        <!-- Time limit slider -->
+        <!-- Time limit text box -->
+        <!-- We do 3 sec - 2 min, defaulting to 1 min if misstyped or whatever-->
         <TextBlock Grid.Row="2" Grid.Column="0"
-                   Text="Time Limit"
+                   Text="Time Limit (sec)"
                    Margin="0,0,8,8"
                    VerticalAlignment="Center"
                    FontWeight="Bold" />
@@ -66,15 +67,13 @@
         <StackPanel Grid.Row="2" Grid.Column="1"
                     Orientation="Horizontal"
                     Margin="0,0,0,8">
-            <Slider Width="150"
-                    Minimum="0"
-                    Maximum="60"
-                    TickFrequency="5"
-                    IsSnapToTickEnabled="True"
-                    Value="{Binding TimePerQuestion, Mode=TwoWay}" />
-            <TextBlock Margin="8,0,0,0"
-                       VerticalAlignment="Center"
-                       Text="{Binding TimePerQuestion, StringFormat='{}{0} seconds'}" />
+            <TextBox x:Name="TimeLimitTextBox"
+                     Width="60"
+                     Text="{Binding TimePerQuestion, Mode=OneWay}"
+                     HorizontalContentAlignment="Right"
+                     Margin="0,0,8,0" />
+            <TextBlock VerticalAlignment="Center"
+                       Text="(3–120 sec, invalid → 60)" />
         </StackPanel>
 
         <!-- OK / Cancel -->

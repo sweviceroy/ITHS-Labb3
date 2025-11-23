@@ -14,7 +14,7 @@ namespace ITHSLab3.ViewModels
 
         private async Task RunAsync()
         {
-            await Task.Delay(11000);
+            await Task.Delay(9000);
             SplashCompleted?.Invoke();
         }
     }

@@ -12,6 +12,8 @@
     <None Remove="Assets\ImageCORRECT.png" />
     <None Remove="Assets\ImageERROR.png" />
     <None Remove="Assets\QuizForgeSplashScreen.png" />
+    <None Remove="Assets\SoundCorrectAnswer.wav" />
+    <None Remove="Assets\SoundIncorrectAnswer.wav" />
     <None Remove="Assets\SoundMusic.wav" />
     <None Remove="Assets\SoundSplashScreen.wav" />
   </ItemGroup>
@@ -28,6 +30,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\ImageERROR.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\SoundCorrectAnswer.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\SoundIncorrectAnswer.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\SoundMusic.wav">

@@ -15,14 +15,47 @@ using System.Windows.Shapes;
 
 namespace ITHSLab3.Views
 {
-    /// <summary>
-    /// Interaction logic for ConfigurationView.xaml
-    /// </summary>
     public partial class ConfigurationView : UserControl
     {
         public ConfigurationView()
         {
             InitializeComponent();
+        }
+
+        private void PackNameTextBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            SelectListViewItemFromTextBox(sender);
+        }
+
+        private void QuestionTextBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            SelectListViewItemFromTextBox(sender);
+        }
+
+        private void SelectListViewItemFromTextBox(object sender)
+        {
+            var textBox = sender as TextBox;
+            if (textBox == null)
+                return;
+
+            var listViewItem = FindAncestor<ListViewItem>(textBox);
+            if (listViewItem != null && !listViewItem.IsSelected)
+            {
+                listViewItem.IsSelected = true;
+            }
+        }
+
+        private static T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            while (current != null)
+            {
+                if (current is T match)
+                    return match;
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return null;
         }
     }
 }

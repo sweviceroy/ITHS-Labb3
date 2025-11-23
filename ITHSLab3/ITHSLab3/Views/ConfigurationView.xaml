@@ -8,27 +8,24 @@
              mc:Ignorable="d"
              d:DesignWidth="1080" d:DesignHeight="680">
 
-        <!-- Keyboard bindings -->
-        <UserControl.InputBindings>
-        
+    <!-- Keyboard bindings -->
+    <UserControl.InputBindings>
+
         <KeyBinding Key="N"
-                Modifiers="Control"
-                Command="{Binding AddPackCommand}" />
+                    Modifiers="Control"
+                    Command="{Binding AddPackCommand}" />
 
-        <!-- Add Question -->
-        <KeyBinding Key="Q"
-                Modifiers="Control"
-                Command="{Binding AddQuestionCommand}" />
+        <KeyBinding Key="O"
+                    Modifiers="Control"
+                    Command="{Binding LoadFromFileCommand}" />
 
-        <!-- Remove Question -->
-        <KeyBinding Key="Delete"
-                Modifiers="Control"
-                Command="{Binding RemoveQuestionCommand}" />
+        <KeyBinding Key="S"
+                    Modifiers="Control"
+                    Command="{Binding SaveToFileCommand}" />
 
-        <!-- Open Pack Options -->
         <KeyBinding Key="P"
-                Modifiers="Control"
-                Command="{Binding OpenPackOptionsCommand}" />
+                    Modifiers="Control"
+                    Command="{Binding OpenPackOptionsCommand}" />
     </UserControl.InputBindings>
 
 
@@ -46,46 +43,70 @@
 
                 <!-- Editable pack name -->
                 <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 FontWeight="SemiBold"
-                 BorderThickness="0"
-                 Background="Transparent"
-                 VerticalContentAlignment="Center"
-                 TextWrapping="NoWrap" />
+                         FontWeight="SemiBold"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         VerticalContentAlignment="Center"
+                         TextWrapping="NoWrap"
+                         PreviewMouseDown="PackNameTextBox_PreviewMouseDown" />
 
                 <!-- Question count -->
                 <TextBlock Grid.Column="1"
-                   Margin="8,0,0,0"
-                   Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                   Text="{Binding Questions.Count, StringFormat=#Q: {0}}"/>
+                           Margin="8,0,0,0"
+                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                           VerticalAlignment="Center">
+                    <Run Text="{Binding Questions.Count, Mode=OneWay}" />
+                    <Run Text=" questions" />
+                </TextBlock>
             </Grid>
         </DataTemplate>
 
-
+        <!-- DataTemplate for question options in the right panel -->
         <DataTemplate x:Key="OptionTemplate">
-            <DockPanel Margin="4,2">
-                <!-- Clickable checkbox to mark correct answer -->
-                <CheckBox IsChecked="{Binding IsCorrectAnswer, Mode=TwoWay}"
-                  Margin="0,0,8,0"
-                  VerticalAlignment="Center" />
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- Editable option text -->
-                <TextBox Text="{Binding AnswerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextWrapping="Wrap"
-                 BorderThickness="0"
-                 Background="Transparent"
-                 VerticalContentAlignment="Center" />
-            </DockPanel>
+                <CheckBox Grid.Column="0"
+                          Margin="0,0,6,0"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding IsCorrectAnswer, Mode=TwoWay}" />
+
+                <TextBox Grid.Column="1"
+                         Text="{Binding AnswerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         TextWrapping="Wrap" />
+            </Grid>
         </DataTemplate>
-
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Margin="16">
         <Grid.RowDefinitions>
+            <!-- Top area: header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Middle area: main config panels -->
             <RowDefinition Height="*"/>
+            <!-- Bottom: start button -->
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <!-- ========== HEADER ========== -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="QuizForge – Configuration"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Margin="0,0,12,0"/>
+            <TextBlock Text="(Create and edit question packs)"
+                       VerticalAlignment="Bottom"
+                       Foreground="LightGray"/>
+        </StackPanel>
+
+        <!-- ========== MAIN PANELS ========== -->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2.2*"/>
                 <ColumnDefinition Width="2.8*"/>
@@ -101,34 +122,42 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
-                        <TextBlock Text="Packs" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
-
+                        <TextBlock Text="Question packs" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
                         <Button Content="Add" Margin="0,0,6,0" Padding="10,4"
-            Command="{Binding AddPackCommand}" />
-
-                        <Button Content="Remove" Margin="0,0,6,0" Padding="10,4"
-            Command="{Binding RemovePackCommand}"
-            CommandParameter="{Binding SelectedPack}" />
-
-                        <!-- JSON Save/Load -->
-                        <Button Content="Save…" Margin="12,0,6,0" Padding="10,4"
-            Command="{Binding SaveToFileCommand}" />
-
-                        <Button Content="Load…" Padding="10,4"
-            Command="{Binding LoadFromFileCommand}" />
+                                Command="{Binding AddPackCommand}" />
+                        <Button Content="Remove" Padding="10,4"
+                                Command="{Binding RemovePackCommand}"
+                                CommandParameter="{Binding SelectedPack}" />
+                        <Button Content="Question Pack Settings" Margin="12,0,0,0" Padding="10,4"
+                                Command="{Binding OpenPackOptionsCommand}"
+                                CommandParameter="{Binding SelectedPack}" />
                     </StackPanel>
 
+                    <Grid Grid.Row="1" Margin="8">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Setter Property="Opacity" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding QuestionPacks.Count}" Value="0">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Opacity" Value="0.55"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
 
-                    <ListView Grid.Row="1"
-                              Margin="8"
-                              ItemContainerStyle="{StaticResource WrapListViewItem}"
-                              ItemsSource="{Binding QuestionPacks}"
-                              SelectedItem="{Binding SelectedPack, Mode=TwoWay}"
-                              IsSynchronizedWithCurrentItem="True">
-                        <ListView.ItemTemplate>
-                            <StaticResource ResourceKey="PackTemplate"/>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                        <ListView ItemsSource="{Binding QuestionPacks}"
+                                  SelectedItem="{Binding SelectedPack, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource PackTemplate}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem"
+                                       BasedOn="{StaticResource WrapListViewItem}">
+                                    <Setter Property="Margin" Value="0,2,0,2"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </Grid>
                 </Grid>
             </Border>
 
@@ -166,23 +195,24 @@
 
                         <ListView ItemContainerStyle="{StaticResource WrapListViewItem}"
                                   ItemsSource="{Binding SelectedPack.Questions}"
-                                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}" Margin="0,0,0,-2">
+                                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"
+                                  Margin="10,-12,-10,10">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Question text" Width="380">
+                                    <GridViewColumn Header="Text (click to edit)" Width="380">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBox Text="{Binding QuestionText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  BorderThickness="0"
-                                                  Background="Transparent"
-                                                  TextWrapping="Wrap" />
+                                                         BorderThickness="0"
+                                                         Background="Transparent"
+                                                         TextWrapping="Wrap"
+                                                         PreviewMouseDown="QuestionTextBox_PreviewMouseDown" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
-                                        
                                     </GridViewColumn>
 
-                                    <GridViewColumn Header="Options" Width="80"
-                                                    DisplayMemberBinding="{Binding Options.Count}"/>
+                                    <GridViewColumn Header="Option count, Click to select" Width="80"
+                                                    DisplayMemberBinding="{Binding Options.Count, Mode=OneWay}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -190,7 +220,7 @@
                 </Grid>
             </Border>
 
-            <!-- ========== RIGHT: OPTIONS ========== -->
+            <!-- ========== RIGHT: OPTIONS FOR SELECTED QUESTION ========== -->
             <Border Grid.Column="2" Background="{StaticResource QuizPanelBg}" Padding="8" Margin="4">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -198,12 +228,13 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
+                    <!-- We will only use 4 options! Forget mixing in multiple fake options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
-                        <TextBlock Text="Options" FontWeight="Bold" FontSize="16" Margin="0,0,12,0"/>
-                        <Button Content="Pack Options…" Padding="10,4"
-                                Command="{Binding OpenPackOptionsCommand}"
-                                CommandParameter="{Binding SelectedPack}" />
+                        <TextBlock Text="Options for selected question"
+                       FontWeight="Bold"
+                       FontSize="16" />
                     </StackPanel>
+
 
                     <Grid Grid.Row="1" Margin="8">
                         <Grid.Style>
@@ -219,23 +250,42 @@
                             </Style>
                         </Grid.Style>
 
-                        <ListView ItemContainerStyle="{StaticResource WrapListViewItem}"
-                                  ItemsSource="{Binding SelectedQuestion.Options}">
-                            <ListView.ItemTemplate>
-                                <StaticResource ResourceKey="OptionTemplate"/>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Margin="0,0,0,8"
+                                   Text="{Binding SelectedQuestion.QuestionText}"
+                                   TextWrapping="Wrap"
+                                   FontWeight="SemiBold"/>
+
+                        <ListView Grid.Row="1"
+                                  ItemsSource="{Binding SelectedQuestion.Options}"
+                                  SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource OptionTemplate}"
+                                  ItemContainerStyle="{StaticResource WrapListViewItem}" />
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- ========== BOTTOM BAR: START QUIZ ========== -->
-        <DockPanel Grid.Row="1" LastChildFill="False" Margin="8,0,8,8">
-            <Separator DockPanel.Dock="Left" />
+        <!-- ========== BOTTOM BAR: SAVE / LOAD / START QUIZ ========== -->
+        <DockPanel Grid.Row="2" LastChildFill="False" Margin="8,12,8,0">
+
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                <Button Content="Load QuestionPacks"
+                        Width="120" Height="36"
+                        Margin="0,0,8,0"
+                        Command="{Binding LoadFromFileCommand}" />
+                <Button Content="Save QuestionPacks"
+                        Width="120" Height="36"
+                        Command="{Binding SaveToFileCommand}" />
+            </StackPanel>
+
             <Button DockPanel.Dock="Right"
-                    Content="Start"
-                    Width="140" Height="40"
+                    Content="Start quiz"
+                    Width="160" Height="40"
                     FontWeight="SemiBold"
                     Command="{Binding StartPlayCommand}" />
         </DockPanel>
