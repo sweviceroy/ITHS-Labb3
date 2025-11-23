@@ -11,6 +11,7 @@ namespace ITHSLab3.ViewModels
     // make it public so MainWindow can create it
     public class ShellViewModel : ViewModelBase
     {
+        // audioService that we use
         private readonly AudioService _audioService = new AudioService();
 
 
@@ -30,6 +31,12 @@ namespace ITHSLab3.ViewModels
         private MenuViewModel _menuViewModel;
         private ConfigurationViewModel _configurationViewModel;
         private PlayerViewModel _playerViewModel;
+
+        // Victory! 
+        private VictoryViewModel _victoryViewModel;
+
+        private string? _lastPlayedPackName;
+
 
         public ShellViewModel()
         {
@@ -99,13 +106,36 @@ namespace ITHSLab3.ViewModels
             if (_playerViewModel == null)
             {
                 _playerViewModel = new PlayerViewModel();
+                _playerViewModel.QuizFinished += OnQuizFinished;
             }
 
+            _lastPlayedPackName = pack.Name;
+
             // låt PlayerViewModel ladda in valt pack
-            _playerViewModel.LoadPack(pack); // 
+            _playerViewModel.LoadPack(pack);
 
             // byt vy till Player
             CurrentView = _playerViewModel;
         }
+
+        private void OnQuizFinished(int score, int totalQuestions)
+        {
+
+            // Play victory sound
+            // _audioService.PlayOneShot("Assets/SoundVictory.wav", 1.0); DOESNT PLAY! Something interrupts it. 
+
+            string packName = _lastPlayedPackName ?? "NO PACKNAME FOUND";
+
+            _victoryViewModel = new VictoryViewModel(packName, score, totalQuestions);
+            _victoryViewModel.BackToMenuRequested += OnVictoryBackToMenu;
+
+            CurrentView = _victoryViewModel;
+        }
+
+        private void OnVictoryBackToMenu()
+        {
+            CurrentView = _menuViewModel;
+        }
+
     }
 }

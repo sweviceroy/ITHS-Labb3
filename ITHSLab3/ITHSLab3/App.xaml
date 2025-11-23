@@ -9,29 +9,39 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- 🔹 Include the QuizForge theme -->
+                <!--  Include the QuizForge theme -->
                 <ResourceDictionary Source="Themes/Theme.QuizForge.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- 🔸 SplashViewModel -> SplashView -->
+            <!--  SplashViewModel -> SplashView -->
             <DataTemplate DataType="{x:Type vm:SplashViewModel}">
                 <views:SplashView />
             </DataTemplate>
 
-            <!-- 🔸 MenuViewModel -> MenuView -->
+            <!--  MenuViewModel -> MenuView -->
             <DataTemplate DataType="{x:Type vm:MenuViewModel}">
                 <views:MenuView />
             </DataTemplate>
 
-            <!-- 🔸 ConfigurationViewModel -> ConfigurationView -->
+            <!--  ConfigurationViewModel -> ConfigurationView -->
             <DataTemplate DataType="{x:Type vm:ConfigurationViewModel}">
                 <views:ConfigurationView />
             </DataTemplate>
 
-            <!-- 🔸 PlayerViewModel -> PlayerView -->
+            <!--  PlayerViewModel -> PlayerView -->
             <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
                 <views:PlayerView />
             </DataTemplate>
+
+
+            <!-- VICTORY VIEW MODEL! STOP BITCHING! -->
+
+
+            <DataTemplate DataType="{x:Type vm:VictoryViewModel}">
+                <views:VictoryView />
+            </DataTemplate>
+
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

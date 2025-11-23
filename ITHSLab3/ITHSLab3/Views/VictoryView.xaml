@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="ITHSLab3.Views.VictoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1080" d:DesignHeight="680">
+
+    <Grid>
+        <!-- Background image from Sora -->
+        <Grid.Background>
+            <!-- change filename if needed -->
+            <ImageBrush ImageSource="/Assets/ImageFinish.png"
+                        Stretch="UniformToFill" />
+        </Grid.Background>
+
+        <!-- full-screen dark overlay -->
+        <Border Background="#66000000" />
+
+        <!-- centered panel with padding -->
+        <Border Background="#66000000"
+                Padding="24"
+                MaxWidth="600"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="40">
+            <StackPanel>
+
+                <TextBlock Text="{Binding Heading}"
+                           FontSize="40"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Text="{Binding PackName}"
+                           FontSize="20"
+                           FontStyle="Italic"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,18"/>
+
+                <TextBlock Text="{Binding ResultText}"
+                           FontSize="20"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           Margin="0,0,0,24"/>
+
+                <Button Content="Back to Main Menu"
+                        Width="220"
+                        Height="40"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Center"
+                        Command="{Binding BackToMenuCommand}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- footer, like main menu -->
+        <TextBlock Text="© IT-Högskolan – QuizForge"
+                   FontSize="12"
+                   Foreground="#CCFFFFFF"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom"
+                   Margin="0,0,0,10"/>
+    </Grid>
+</UserControl>

@@ -348,6 +348,8 @@ namespace ITHSLab3.ViewModels
         {
             IsQuizFinished = true;
 
+            _audioService.PlayOneShot("Assets/SoundVictory.wav", 0.9); // EFTERBLIVNA LJUDET FUNGERAR NICHT! 
+
             int totalQuestions = 0;
             if (_sessionQuestions != null)
                 totalQuestions = _sessionQuestions.Count;
