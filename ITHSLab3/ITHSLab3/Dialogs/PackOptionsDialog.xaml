@@ -6,11 +6,12 @@
         xmlns:models="clr-namespace:ITHSLab3.Models"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Pack Options"
+        Title="Question Pack Settings"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Padding="16">
+        Padding="16"
+        Background="{StaticResource QuizBg}">
 
     <Window.Resources>
         <!-- All enum values for Difficulty -->
@@ -23,72 +24,79 @@
         </ObjectDataProvider>
     </Window.Resources>
 
-    <Grid Margin="4">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="220"/>
-        </Grid.ColumnDefinitions>
+    <!-- Outer panel to match main theme -->
+    <Border Background="{StaticResource QuizPanelBg}"
+            CornerRadius="8"
+            Padding="16">
 
-        <!-- Pack name -->
-        <TextBlock Grid.Row="0" Grid.Column="0"
-                   Text="Pack Name"
-                   Margin="0,0,8,8"
-                   VerticalAlignment="Center"
-                   FontWeight="Bold" />
-        <TextBox Grid.Row="0" Grid.Column="1"
-                 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="0,0,0,8" />
+        <Grid Margin="4">
+            <Grid.RowDefinitions>
+                <!-- Difficulty -->
+                <RowDefinition Height="Auto"/>
+                <!-- Time -->
+                <RowDefinition Height="Auto"/>
+                <!-- Buttons -->
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Difficulty -->
-        <TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="Difficulty"
-                   Margin="0,0,8,8"
-                   VerticalAlignment="Center"
-                   FontWeight="Bold" />
-        <ComboBox Grid.Row="1" Grid.Column="1"
-                  Margin="0,0,0,8"
-                  ItemsSource="{Binding Source={StaticResource DifficultyValues}}"
-                  SelectedItem="{Binding Difficulty, Mode=TwoWay}" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="220"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Time limit text box -->
-        <!-- We do 3 sec - 2 min, defaulting to 1 min if misstyped or whatever-->
-        <TextBlock Grid.Row="2" Grid.Column="0"
-                   Text="Time Limit (sec)"
-                   Margin="0,0,8,8"
-                   VerticalAlignment="Center"
-                   FontWeight="Bold" />
+            <!-- Difficulty -->
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="Difficulty"
+                       Margin="0,0,8,8"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       Foreground="White" />
+            <ComboBox Grid.Row="0" Grid.Column="1"
+                      Margin="0,0,0,8"
+                      ItemsSource="{Binding Source={StaticResource DifficultyValues}}"
+                      SelectedItem="{Binding Difficulty, Mode=TwoWay}"
+                      Background="#222222"
+                      Foreground="White"
+                      BorderBrush="#555555" />
 
-        <StackPanel Grid.Row="2" Grid.Column="1"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,8">
-            <TextBox x:Name="TimeLimitTextBox"
-                     Width="60"
-                     Text="{Binding TimePerQuestion, Mode=OneWay}"
-                     HorizontalContentAlignment="Right"
-                     Margin="0,0,8,0" />
-            <TextBlock VerticalAlignment="Center"
-                       Text="(3–120 sec, invalid → 60)" />
-        </StackPanel>
+            <!-- Time limit text box -->
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Text="Time Limit (sec)"
+                       Margin="0,0,8,8"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       Foreground="White" />
 
-        <!-- OK / Cancel -->
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,8,0,0">
-            <Button Content="OK"
-                    Width="75"
-                    Margin="0,0,8,0"
-                    IsDefault="True"
-                    Click="OkButton_Click" />
-            <Button Content="Cancel"
-                    Width="75"
-                    IsCancel="True" />
-        </StackPanel>
-    </Grid>
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        Orientation="Horizontal"
+                        Margin="0,0,0,8">
+                <TextBox x:Name="TimeLimitTextBox"
+                         Width="60"
+                         Text="{Binding TimePerQuestion, Mode=OneWay}"
+                         HorizontalContentAlignment="Right"
+                         Margin="0,0,8,0"
+                         Background="White"
+                         Foreground="White"
+                         BorderBrush="#555555" />
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="LightGray"
+                           Text="(3–120 sec, invalid → 60)" />
+            </StackPanel>
+
+            <!-- OK / Cancel -->
+            <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,8,0,0">
+                <Button Content="OK"
+                        Width="75"
+                        Margin="0,0,8,0"
+                        IsDefault="True"
+                        Click="OkButton_Click" />
+                <Button Content="Cancel"
+                        Width="75"
+                        IsCancel="True" />
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>
