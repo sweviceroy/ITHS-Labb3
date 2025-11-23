@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using ITHSLab3.Models;
+using ITHSLab3.Services;
+using System;
 using System.Collections.Generic;   // behövs för List<T>
-using System.Windows.Input;
-using ITHSLab3.Models;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Threading;
+
 
 
 namespace ITHSLab3.ViewModels
@@ -17,6 +19,11 @@ namespace ITHSLab3.ViewModels
         // ■■ PROPERTIES AND FIELDS  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
+        // sound to use playOneShot(string filePath, double volume = 1.0)
+
+        private readonly AudioService _audioService = new AudioService();
+
+        // our Error and ! fantastic pics for displaying right/wrong ... thanks SORA :/
         private string _feedbackImageSource;
         public string FeedbackImageSource
         {
@@ -294,13 +301,18 @@ namespace ITHSLab3.ViewModels
             // check correctness
             bool correct = selectedOption.IsCorrectAnswer;
             if (correct)
+            {
                 Score++;
-
-            // set image
-            if (correct)
+                _audioService.PlayOneShot("Assets/SoundCorrectAnswer.wav", 1.0);
                 FeedbackImageSource = "/Assets/ImageCORRECT.png";
+            }
+
             else
+            {
+                _audioService.PlayOneShot("Assets/SoundIncorrectAnswer.wav", 0.8);    // increase decrese sound if tested to be too loud/low
                 FeedbackImageSource = "/Assets/ImageERROR.png";
+            }
+                
 
             // show it
             FeedbackVisible = true;

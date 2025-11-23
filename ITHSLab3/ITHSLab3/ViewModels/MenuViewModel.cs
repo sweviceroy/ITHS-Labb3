@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ITHSLab3.Services;
+using System;
 using System.Windows.Input;
+using ITHSLab3.Services;
 
 namespace ITHSLab3.ViewModels
 {
@@ -20,6 +22,9 @@ namespace ITHSLab3.ViewModels
 
         private void StartConfiguration(object? _)
         {
+            AudioService _audioService = new AudioService();
+            _audioService.PlayOneShot("Assets/SoundStartConfig.wav", 2.0);
+            Thread.Sleep(3000);
             StartConfigurationRequested?.Invoke();
         }
     }
